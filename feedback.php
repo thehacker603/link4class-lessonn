@@ -224,6 +224,8 @@ button:hover {background:var(--accent-2);}
     <li><a href="test.php"><span class="icon">📊</span>Test</a></li>
     <li><a href="call.php"><span class="icon">☎️</span>Call</a></li>
     <li><a href="tutor.html"><span class="icon">✅</span>Tutor</a></li>
+    <li><a href="leaderboard.php"><span class="icon">🏆</span>Classifica</a></li>
+    <li><a href="calendario.php"><span class="icon">🗓️</span>calendario</a></li>
     <li><a href="logout.php" id="logout-link"><span class="icon">🚪</span>Logout</a></li>
   </ul>
 </div>
