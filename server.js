@@ -1,16 +1,24 @@
-const { PeerServer } = require('peer');
+const WebSocket = require('ws');
 
-const PORT = 9000;       // porta server
-const PATH = '/';   // path PeerJS
+const wss = new WebSocket.Server({ port: 8080 });
 
-const peerServer = PeerServer({ port: PORT, path: PATH });
+let peers = [];
 
-peerServer.on('connection', (client) => {
-  console.log(`Peer connesso: ${client.id}`);
+wss.on('connection', ws => {
+    peers.push(ws);
+
+    ws.on('message', message => {
+        // inoltra il messaggio a tutti gli altri peer
+        peers.forEach(peer => {
+            if (peer !== ws && peer.readyState === WebSocket.OPEN) {
+                peer.send(message);
+            }
+        });
+    });
+
+    ws.on('close', () => {
+        peers = peers.filter(p => p !== ws);
+    });
 });
 
-peerServer.on('disconnect', (client) => {
-  console.log(`Peer disconnesso: ${client.id}`);
-});
-
-console.log(`PeerServer avviato su http://localhost:${PORT}${PATH}`);
+console.log('Signaling server attivo su ws://localhost:8080');

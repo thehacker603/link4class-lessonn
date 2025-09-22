@@ -2,82 +2,49 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Videochiamata Daily.co</title>
+    <title>Videochiamata semplice</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background-color: #f4f4f9;
-        }
-        #input-container {
-            margin-top: 50px;
-            text-align: center;
-        }
-        input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            width: 250px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-left: 10px;
-            cursor: pointer;
-        }
-        #video-container {
-            margin-top: 20px;
-            width: 80%;
-            height: 70%;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #jitsi-container { width: 100%; height: 100vh; }
+        #startBtn { position: absolute; z-index: 10; margin: 10px; padding: 10px 20px; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div id="input-container">
-        <h2>Entra nella Videochiamata</h2>
-        <input type="text" id="roomCode" placeholder="Inserisci codice stanza Daily.co">
-        <button onclick="joinRoom()">Entra</button>
-        <button onclick="createRoom()">Crea stanza casuale</button>
-    </div>
+    <button id="startBtn">Avvia Videochiamata</button>
+    <div id="jitsi-container"></div>
 
-    <div id="video-container"></div>
-
+    <!-- Libreria Jitsi Meet API -->
+    <script src="https://meet.jit.si/external_api.js"></script>
     <script>
-        function joinRoom() {
-            const roomCode = document.getElementById('roomCode').value.trim();
-            if (!roomCode) {
-                alert("Per favore inserisci un codice stanza!");
-                return;
-            }
-            startCall(roomCode);
-        }
+        document.getElementById('startBtn').onclick = function() {
+            this.style.display = 'none'; // nasconde il pulsante
 
-        function createRoom() {
-            // Genera un nome stanza casuale, es. "stanza-1234abcd"
-            const randomRoom = 'stanza-' + Math.random().toString(36).substring(2, 10);
-            document.getElementById('roomCode').value = randomRoom;
-            startCall(randomRoom);
-        }
+            // Nome stanza unico per questa chiamata
+            const roomName = "VideoCall_<?php echo rand(1000,9999); ?>";
 
-        function startCall(roomCode) {
-            const container = document.getElementById('video-container');
-            container.innerHTML = ''; // Pulisco il contenitore
+            const options = {
+                roomName: roomName,
+                parentNode: document.getElementById('jitsi-container'),
+                width: '100%',
+                height: '100%',
+                configOverwrite: {
+                    startWithAudioMuted: false,
+                    startWithVideoMuted: false
+                },
+                interfaceConfigOverwrite: {
+                    SHOW_JITSI_WATERMARK: false,
+                    SHOW_WATERMARK_FOR_GUESTS: false,
+                    SHOW_POWERED_BY: false
+                }
+            };
 
-            // Creo l'iframe Daily.co
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://${encodeURIComponent(roomCode)}.daily.co`;
-            iframe.allow = "camera; microphone; fullscreen";
-            container.appendChild(iframe);
-        }
+            const api = new JitsiMeetExternalAPI('meet.jit.si', options);
+
+            // Eventi opzionali
+            api.addEventListener('videoConferenceJoined', event => {
+                console.log('Entrato nella stanza:', event.roomName);
+            });
+        };
     </script>
 </body>
 </html>
