@@ -312,9 +312,7 @@ body{
     <li><a href="feedback.php"><span class="icon">📝</span>Feedback</a></li>
     <li><a href="test.php"><span class="icon">📊</span>Test</a></li>
     <li><a href="call.php"><span class="icon">☎️</span>Call</a></li>
-    <li><a href="tutor.html"><span class="icon">✅</span>Tutor</a></li>
     <li><a href="leaderboard.php"><span class="icon">🏆</span>Classifica</a></li>
-    <li><a href="calendario.php"><span class="icon">🗓️</span>calendario</a></li>
     <li><a href="logout.php" id="logout-link"><span class="icon">🚪</span>Logout</a></li>
   </ul>
 </div>
@@ -355,21 +353,27 @@ body{
         $total_reviews = $rating_data['total_reviews'] ?? 0;
     ?>
         <div class="card">
-            <div class="avatar">
-                <?php if ($match['user_image']): ?>
-                    <img src="<?= htmlspecialchars($match['user_image']) ?>" alt="<?= htmlspecialchars($match['username']) ?>">
-                <?php else: ?>
-                    <?= initials($match['username']) ?>
-                <?php endif; ?>
-            </div>
-            <div class="card-info">
+             <div class="avatar">
+    <?php if (!empty($match['user_image'])): ?>
+        <img src="<?= htmlspecialchars($match['user_image']) ?>" 
+             alt="<?= htmlspecialchars($match['username']) ?>">
+    <?php else: ?>
+        <!-- Immagine di fallback generica -->
+        <img src="uploads/profile_default.jpg" 
+             alt="<?= htmlspecialchars($match['username']) ?>" 
+             style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+    <?php endif; ?>
+</div>
+
+
+           <div class="card-info">
                 <h3>
-                  <!-- modifica CON IP O DOMINIO -->
-                    <a href="http://192.168.0.160/link4schooll-main44/link4schooll-main444/link4schooll-main/chat.php?with=<?= $match['id'] ?>" target="_blank" 
-                       style="color:var(--accent); text-decoration:none;">
+                    <a href="profile.php?user_id=<?= $match['id'] ?>" 
+                      style="color:var(--accent); text-decoration:none;">
                         <?= htmlspecialchars($match['username']) ?>
                     </a>
                 </h3>
+
                 <p><strong></strong> <?= $avg_rating ?> ⭐ (<?= $total_reviews ?>)</p>
                 <?php if (!empty($know) || !empty($want)): ?>
                     <p><strong>Conoscenze:</strong> 
