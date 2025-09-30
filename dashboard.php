@@ -307,6 +307,7 @@ body{
 
 <div class="sidebar" id="sidebar">
   <ul>
+    <li><a href="profile.php"><span class="icon"></span>Profilo</a></li>
     <li><a href="dashboard.php"><span class="icon">🤝</span>Matching</a></li>
     <li><a href="preferences.php"><span class="icon">⚙️</span>Preferenze</a></li>
     <li><a href="feedback.php"><span class="icon">📝</span>Feedback</a></li>

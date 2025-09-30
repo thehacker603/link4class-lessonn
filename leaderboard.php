@@ -8,7 +8,7 @@ if ($mysqli->connect_errno) {
 // Funzione per ottenere i top 10 tutor
 function getLeaders($mysqli) {
     $sql = "
-        SELECT u.id, u.username, AVG(r.rating) AS avg_rating, COUNT(r.rating) AS total_reviews
+        SELECT u.id, u.username, u.user_image, AVG(r.rating) AS avg_rating, COUNT(r.rating) AS total_reviews
         FROM users u
         JOIN reviews r ON u.id = r.reviewed_id
         GROUP BY u.id
@@ -18,12 +18,13 @@ function getLeaders($mysqli) {
     $result = $mysqli->query($sql);
 
     if (!$result) {
-        // Mostra errore SQL per debug
         die("Errore query SQL: " . $mysqli->error);
     }
 
     $leaders = [];
     while($row = $result->fetch_assoc()) {
+        // Se non c'è immagine, usa fallback
+        $row['avatar_url'] = !empty($row['user_image']) ? $row['user_image'] : 'uploads/profile_default.jpg';
         $leaders[] = $row;
     }
     return $leaders;
@@ -46,7 +47,6 @@ $leaders = getLeaders($mysqli);
 <title>Classifica Tutor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-/* --- STILI INVARIATI DAL CODICE PRECEDENTE --- */
 :root{--bg:#0a0d13;--bg-2:#0c1118;--surface:#0f1520;--surface-2:#121a26;--text:#eef3ff;--muted:#9aa6bf;--border:rgba(255,255,255,.10);--border-strong:rgba(255,255,255,.18);--accent:#5d79ff;--accent-2:#21b1ff;--radius:16px;--radius-lg:24px;--blur:14px;--speed:180ms;--shadow-1:0 20px 60px rgba(0,0,0,.45);--shadow-2:0 12px 32px rgba(0,0,0,.28);}
 html[data-theme="light"]{--bg:#f6f8fd;--bg-2:#ffffff;--surface:#ffffff;--surface-2:#f2f5fb;--text:#0b1220;--muted:#4b5568;--border:rgba(10,20,40,.10);--border-strong:rgba(10,20,40,.16);--accent:#4d6bff;--accent-2:#0aaee8;--shadow-1:0 16px 48px rgba(10,20,40,.16);--shadow-2:0 10px 28px rgba(10,20,40,.12);}
 html,body{height:100%;margin:0;color:var(--text);font:500 16px/1.55 Inter,sans-serif;background: linear-gradient(180deg,var(--bg),var(--bg-2));}*{box-sizing:border-box;}::selection{ background: rgba(93,121,255,.35); color:#fff }
@@ -84,12 +84,13 @@ html,body{height:100%;margin:0;color:var(--text);font:500 16px/1.55 Inter,sans-s
 <body>
 <div class="sidebar" id="sidebar">
   <ul>
+    <li><a href="profile.php"><span class="icon"></span>Profilo</a></li>
     <li><a href="dashboard.php"><span class="icon">🤝</span>Matching</a></li>
     <li><a href="preferences.php"><span class="icon">⚙️</span>Preferenze</a></li>
     <li><a href="feedback.php"><span class="icon">📝</span>Feedback</a></li>
     <li><a href="test.php"><span class="icon">📊</span>Test</a></li>
     <li><a href="call.php"><span class="icon">☎️</span>Call</a></li>
-    <li><a href="leaderboard.php"><span class="icon">🏆</span>Classifica</a></li>
+    <li><a href="leaderboard.php" class="active"><span class="icon">🏆</span>Classifica</a></li>
     <li><a href="logout.php" id="logout-link"><span class="icon">🚪</span>Logout</a></li>
   </ul>
 </div>
@@ -134,7 +135,7 @@ const updateLeaderboard = async () => {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <div class="avatar">${tutor.avatar_url ? `<img src="${tutor.avatar_url}" alt="${tutor.username}">` : tutor.username.charAt(0).toUpperCase()}</div>
+        <div class="avatar"><img src="${tutor.avatar_url}" alt="${tutor.username}"></div>
         <div class="card-info">
           <h3>${tutor.username}</h3>
           <p>${parseFloat(tutor.avg_rating).toFixed(1)} ★ | ${tutor.total_reviews} recensioni</p>
@@ -149,7 +150,7 @@ const updateLeaderboard = async () => {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <div class="avatar">${tutor.avatar_url ? `<img src="${tutor.avatar_url}" alt="${tutor.username}">` : tutor.username.charAt(0).toUpperCase()}</div>
+        <div class="avatar"><img src="${tutor.avatar_url}" alt="${tutor.username}"></div>
         <div class="card-info">
           <h3>${tutor.username}</h3>
           <p>${parseFloat(tutor.avg_rating).toFixed(1)} ★ | ${tutor.total_reviews} recensioni</p>
@@ -167,3 +168,4 @@ setInterval(updateLeaderboard, 10000);
 </script>
 </body>
 </html>
+
